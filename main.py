@@ -10,8 +10,8 @@ video=cv2.VideoCapture(0)
 video.set(3, 1000)
 video.set(4, 780)
 
-img_1 = cv2.imread('magic_circles/magic_circle_ccw.png', -1)
-img_2 = cv2.imread('magic_circles/magic_circle_cw.png', -1)
+img_1 = cv2.imread('images/magic_circle_ccw.png', -1)
+img_2 = cv2.imread('images/magic_circle_cw.png', -1)
 
 deg=0
 
