@@ -2,7 +2,7 @@ import cv2
 import mediapipe as mp
 
 mpHands=mp.solutions.hands
-hands=mpHands.Hands()
+hands=mpHands.Hands(max_num_hands=8)
 mpDraw=mp.solutions.drawing_utils
 
 video=cv2.VideoCapture(0)
@@ -12,6 +12,7 @@ video.set(4, 780)
 
 img_1 = cv2.imread('images/magic_circle_ccw.png', -1)
 img_2 = cv2.imread('images/magic_circle_cw.png', -1)
+img_light = cv2.imread('images/starts_02.png', -1)
 
 deg=0
 
@@ -28,8 +29,8 @@ def position_data(lmlist):
 
 
 def draw_line(p1, p2, size=5):
-    cv2.line(img, p1, p2, (50,50,255), size)
-    cv2.line(img, p1, p2, (255, 255, 255), round(size / 2))
+    cv2.line(img, p1, p2, (0,255,255), size)
+    cv2.line(img, p1, p2, (255,255,255), round(size / 2))
 
 def calculate_distance(p1,p2):
     x1, y1, x2, y2 = p1[0], p1[1], p2[0], p2[1]
@@ -60,7 +61,8 @@ while True:
     img=cv2.flip(img, 1)
     rgbimg=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     result=hands.process(rgbimg)
-    if result.multi_hand_landmarks:
+    
+    if result.multi_hand_landmarks and len(result.multi_hand_landmarks) >= 2:
         for hand in result.multi_hand_landmarks:
             lmList=[]
             for id, lm in enumerate(hand.landmark):
@@ -73,18 +75,18 @@ while True:
             palm = calculate_distance(wrist, index_mcp)
             distance = calculate_distance(index_tip, pinky_tip)
             ratio = distance / palm
-            print(ratio)
-            if (1.3>ratio>0.5):
-                draw_line(wrist, thumb_tip)
-                draw_line(wrist, index_tip)
-                draw_line(wrist, midle_tip)
-                draw_line(wrist, ring_tip)
-                draw_line(wrist, pinky_tip)
-                draw_line(thumb_tip, index_tip)
-                draw_line(thumb_tip, midle_tip)
-                draw_line(thumb_tip, ring_tip)
-                draw_line(thumb_tip, pinky_tip)
-            if (ratio > 1.3):
+            # print(ratio)
+            # if (0.8 >= ratio > 0.5):
+            #     draw_line(wrist, thumb_tip)
+            #     draw_line(wrist, index_tip)
+            #     draw_line(wrist, midle_tip)
+            #     draw_line(wrist, ring_tip)
+            #     draw_line(wrist, pinky_tip)
+            #     draw_line(thumb_tip, index_tip)
+            #     draw_line(thumb_tip, midle_tip)
+            #     draw_line(thumb_tip, ring_tip)
+            #     draw_line(thumb_tip, pinky_tip)
+            if (ratio > 0.9):
                     centerx = midle_mcp[0]
                     centery = midle_mcp[1]
                     shield_size = 3.0
@@ -118,7 +120,6 @@ while True:
                     if (diameter != 0):
                         img = transparent(rotated1, x1, y1, shield_size)
                         img = transparent(rotated2, x1, y1, shield_size)
-
 
     # print(result)
     cv2.imshow("Image",img)
